@@ -92,7 +92,7 @@ class Detect(nn.Module):
         self.variance = variance
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh
-        self.prior_data = prior_data
+        self.prior_data = nn.Parameter(prior_data)
         self.num_priors = self.prior_data.size(0)
 
     def forward(self, loc_data, conf_data):
@@ -105,7 +105,7 @@ class Detect(nn.Module):
         """
 
         output = []
-        conf_data = torch.nn.functional.softmax(conf_data, -1)
+        conf_data = torch.nn.functional.softmax(conf_data, -1)[..., 1:]
         scores_data, cls_data = conf_data.max(-1)
 
         for boxes, scores, idxs in zip(loc_data, scores_data, cls_data):
